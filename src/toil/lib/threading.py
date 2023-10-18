@@ -381,7 +381,7 @@ def global_mutex(base_dir: str, mutex: str) -> Iterator[None]:
             fd_stats = os.fstat(fd)
 
             path_stats: Optional[os.stat_result] = os.stat(lock_filename)
-        except FileNotFoundError:
+        except (FileNotFoundError, OSError):
             path_stats = None
 
         if path_stats is None or fd_stats.st_dev != path_stats.st_dev or fd_stats.st_ino != path_stats.st_ino:
