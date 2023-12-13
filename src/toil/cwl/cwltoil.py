@@ -2046,26 +2046,24 @@ def toilStageFiles(
                     "WritableDirectory",
                 ]:
                     os.makedirs(p.target)
-                if not os.path.exists(p.target) and p.type in ["File", "WritableFile"]:
+                if p.type in ["File", "WritableFile"]:
                     if p.resolved.startswith("toilfile:"):
-                        # We can actually export this
-                        os.makedirs(os.path.dirname(p.target), exist_ok=True)
-                        toil.exportFile(
-                            FileID.unpack(p.resolved[len("toilfile:") :]),
-                            "file://" + p.target,
-                        )
+                        if not os.path.exists(p.target):                          # don't know how toil.exportFile behave so we don't overwrite outputs in this case
+                            # We can actually export this
+                            os.makedirs(os.path.dirname(p.target), exist_ok=True)
+                            toil.exportFile(
+                                FileID.unpack(p.resolved[len("toilfile:") :]),
+                                "file://" + p.target,
+                            )
                     elif p.resolved.startswith("/"):
                         # Probably staging and bypassing file store. Just copy.
                         os.makedirs(os.path.dirname(p.target), exist_ok=True)
-                        shutil.copyfile(p.resolved, p.target)
+                        shutil.copyfile(p.resolved, p.target)                     # will overwrite the existing file
                     # TODO: can a toildir: "file" get here?
-                if not os.path.exists(p.target) and p.type in [
-                    "CreateFile",
-                    "CreateWritableFile",
-                ]:
+                if p.type in ["CreateFile", "CreateWritableFile"]:
                     # We just need to make a file with particular contents
                     os.makedirs(os.path.dirname(p.target), exist_ok=True)
-                    with open(p.target, "wb") as n:
+                    with open(p.target, "wb") as n:                               # will overwrite the existing file
                         n.write(p.resolved.encode("utf-8"))
 
     def _check_adjust(f: CWLObjectType) -> CWLObjectType:
