@@ -2315,7 +2315,7 @@ def toilStageFiles(
                     # We just need to make a file with particular contents
                     logger.log(log_level, "Saving %s...", dest_url)
                     os.makedirs(os.path.dirname(p.target), exist_ok=True)
-                    with open(p.target, "wb") as n:                               # will overwrite the existing file
+                    with open(p.target, "wb") as n:
                         n.write(p.resolved.encode("utf-8"))
 
     def _check_adjust(f: CWLObjectType) -> CWLObjectType:
