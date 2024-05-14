@@ -11,24 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import logging
-import os
-import uuid
-from typing import Optional
-
-import pytest
-
-from toil.jobStores.aws.jobStore import AWSJobStore
-from toil.lib.aws import iam
-from toil.lib.aws.utils import create_s3_bucket
-from toil.lib.ec2 import establish_boto3_session
-from toil.test import ToilTest, needs_aws_s3
-
-import moto
-import boto3
 import json
+import logging
 
-from moto import mock_iam
+import boto3
+from moto import mock_aws
+
+from toil.lib.aws import iam
+from toil.test import ToilTest
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -56,7 +46,7 @@ class IAMTest(ToilTest):
         assert iam.permission_matches_any("iam:*", ["*"]) is True
         assert iam.permission_matches_any("ec2:*", ['iam:*']) is False
 
-    @mock_iam
+    @mock_aws
     def test_get_policy_permissions(self):
         mock_iam = boto3.client("iam")
 

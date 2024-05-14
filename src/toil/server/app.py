@@ -14,12 +14,11 @@
 import argparse
 import logging
 import os
-from typing import Type
 
 import connexion  # type: ignore
+from configargparse import ArgumentParser
 
 from toil.lib.aws import get_current_aws_region, running_on_ec2, running_on_ecs
-from toil.lib.misc import get_public_ip
 from toil.server.wes.toil_backend import ToilBackend
 from toil.server.wsgi_app import run_app
 from toil.version import version
@@ -28,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 def parser_with_server_options() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Toil server mode.")
+    parser = ArgumentParser(description="Toil server mode.")
 
     parser.add_argument("--debug", action="store_true", default=False,
                         help="Enable debug mode.")
@@ -88,7 +87,7 @@ def create_app(args: argparse.Namespace) -> "connexion.FlaskApp":
 
     if args.cors:
         # enable cross origin resource sharing
-        from flask_cors import CORS  # type: ignore
+        from flask_cors import CORS
         CORS(flask_app.app, resources={r"/ga4gh/*": {"origins": args.cors_origins}})
 
     # add workflow execution service (WES) API endpoints
